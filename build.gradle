@@ -1,0 +1,52 @@
+plugins {
+    id 'java'
+    id 'application'
+}
+
+group = 'lostfound'
+version = '0.1.0'
+
+repositories {
+    mavenCentral()
+}
+
+dependencies {
+    implementation 'com.google.code.gson:gson:2.11.0'
+
+    testImplementation platform('org.junit:junit-bom:5.11.3')
+    testImplementation 'org.junit.jupiter:junit-jupiter'
+    testRuntimeOnly 'org.junit.platform:junit-platform-launcher'
+}
+
+// JDK 21로 통일 (팀원 PC에 JDK 21이 설치되어 있어야 함)
+// Eclipse(Buildship)는 이 값을 읽어 프로젝트의 Java 준수 수준을 21로 맞춘다.
+java {
+    sourceCompatibility = JavaVersion.VERSION_21
+    targetCompatibility = JavaVersion.VERSION_21
+}
+
+tasks.withType(JavaCompile).configureEach {
+    options.encoding = 'UTF-8'
+    options.release = 21
+}
+
+application {
+    mainClass = 'lostfound.app.Main'
+    applicationDefaultJvmArgs = ['-Dfile.encoding=UTF-8']
+}
+
+test {
+    useJUnitPlatform()
+    // CI와 로컬 단위 테스트에서는 실제 API를 부르지 않음
+    environment 'LLM_API_KEY', ''
+    testLogging { events 'failed'; exceptionFormat 'full' }
+}
+
+// 정확도 비교 실험 실행: ./gradlew evaluate
+tasks.register('evaluate', JavaExec) {
+    group = 'verification'
+    description = '규칙만 vs 하이브리드 상위 3개 포함률 비교 실험'
+    classpath = sourceSets.main.runtimeClasspath
+    mainClass = 'lostfound.eval.AccuracyEvaluator'
+    jvmArgs '-Dfile.encoding=UTF-8'
+}
