@@ -1,0 +1,52 @@
+# ===== 비밀 정보 (절대 커밋 금지) =====
+.env
+*.env
+*.key
+*.pem
+secrets/
+local.properties
+llm_cache/
+logs/
+
+# ===== 실제 운영 데이터 (가상 샘플·평가 데이터만 커밋) =====
+data/*
+!data/.gitkeep
+!data/sample/
+!data/eval/
+
+# ===== 빌드 산출물 =====
+build/
+out/
+# Eclipse 컴파일 결과
+bin/
+.gradle/
+*.class
+*.log
+
+# Gradle Wrapper jar는 커밋해야 함
+!gradle/wrapper/gradle-wrapper.jar
+
+# ===== IDE =====
+.idea/
+*.iml
+*.ipr
+*.iws
+.vscode/
+.metadata/
+.recommenders/
+.classpath
+.project
+.factorypath
+# Eclipse 설정은 모두 제외하되, UTF-8 인코딩 설정 파일 하나만 공유
+.settings/*
+!.settings/org.eclipse.core.resources.prefs
+
+# ===== OS =====
+.DS_Store
+Thumbs.db
+desktop.ini
+
+# ===== 발표·영상 원본 (용량이 커서 드라이브에 보관) =====
+*.mp4
+*.mov
+*.pptx

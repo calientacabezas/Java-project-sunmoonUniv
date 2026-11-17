@@ -1,0 +1,4 @@
+# version=1
+# 샘플 습득물 (작성: 강채연·권도영). 실제 개인정보 금지, 가상 값만 사용.
+# id|type|category|color|date|building|floor|place|storage|status|detail|secret
+F0001|ELECTRONICS|EARPHONE|WHITE|2026-11-05|ENGINEERING|3|강의실|학과사무실|STORED|brand=apple|keyring

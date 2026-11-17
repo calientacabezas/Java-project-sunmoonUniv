@@ -1,0 +1,9 @@
+# 정확도 비교 실험 케이스 (작성: 권도영)
+# 형식: id|type|query|answerItemId
+# type: NORMAL(표준 표현) / SYNONYM(동의어·유사 색상) / TYPO(오타) / FOREIGN(외국어)
+# 목표 비율: NORMAL 10 / SYNONYM 10 / TYPO 5 / FOREIGN 5 = 30건
+# answerItemId는 data/sample/found_items.txt의 ID와 일치해야 함. 개인정보는 가상 값만 사용.
+E01|NORMAL|11월 5일 공학관 3층 강의실에서 흰색 무선 이어폰을 잃어버렸어요|F0001
+E02|SYNONYM|어제 공대 3층에서 버즈 케이스 하얀 거 놓고 온 것 같아요|F0001
+E03|TYPO|공학관 3층 흰샥 무선이어펀 분실|F0001
+E04|FOREIGN|I lost white wireless earbuds on the 3rd floor of the engineering building|F0001
