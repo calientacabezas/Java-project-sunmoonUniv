@@ -8,4 +8,3 @@ public interface LlmClient {
     String complete(String systemPrompt, String userInput) throws LlmException;
     boolean isOnline();
 }
-

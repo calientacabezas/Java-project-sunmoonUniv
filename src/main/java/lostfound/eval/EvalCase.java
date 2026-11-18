@@ -6,4 +6,3 @@ package lostfound.eval;
  * answerItemId: 이 검색어의 주인 물건 ID (data/sample의 습득물 ID)
  */
 public record EvalCase(String id, String type, String query, String answerItemId) {}
-

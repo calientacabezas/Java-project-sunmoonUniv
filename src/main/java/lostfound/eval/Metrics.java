@@ -31,4 +31,3 @@ public final class Metrics {
         return sum / answers.size();
     }
 }
-

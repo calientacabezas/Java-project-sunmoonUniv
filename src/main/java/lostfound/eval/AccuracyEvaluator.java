@@ -42,4 +42,3 @@ public class AccuracyEvaluator {
         return list;
     }
 }
-

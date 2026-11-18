@@ -55,4 +55,3 @@ public final class PiiMasker {
         return count;
     }
 }
-

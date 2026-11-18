@@ -16,20 +16,57 @@ public abstract class Item {
     protected final LocalDate foundDate;
     protected final Building building;
     protected final int floor;
+    protected final String title;
+    protected final String publicDetail;
+    protected final String secret;
     protected ItemStatus status = ItemStatus.STORED;
 
     protected Item(String id, Category category, ItemColor color,
                    LocalDate foundDate, Building building, int floor) {
+        this(id, category, color, foundDate, building, floor, category.label(), "", "");
+    }
+
+    protected Item(String id, Category category, ItemColor color,
+                   LocalDate foundDate, Building building, int floor,
+                   String title, String publicDetail, String secret) {
         this.id = id;
         this.category = category;
         this.color = color;
         this.foundDate = foundDate;
         this.building = building;
         this.floor = floor;
+        this.title = (title == null || title.isBlank()) ? category.label() : title;
+        this.publicDetail = (publicDetail == null) ? "" : publicDetail;
+        this.secret = (secret == null) ? "" : secret;
     }
 
     /** 종류별 세부 특징 점수 (0~10). */
     public abstract int detailScore(SearchQuery query);
+
+    /** 하위 클래스 고유 속성 요약 문자열 (UI 표시용). */
+    public abstract String specificSummary();
+
+    protected int keywordMatchScore(SearchQuery query, String... candidates) {
+        if (query == null || query.detailText() == null || query.detailText().isBlank()) {
+            return 0;
+        }
+        String q = query.detailText().toLowerCase();
+        int hits = 0;
+        for (String c : candidates) {
+            if (c != null && !c.isBlank() && q.contains(c.trim().toLowerCase())) {
+                hits++;
+            }
+        }
+        return Math.min(10, hits * 5);
+    }
+
+    public void setStatus(ItemStatus status) {
+        this.status = status;
+    }
+
+    public void markReturned() {
+        this.status = ItemStatus.RETURNED;
+    }
 
     public String getId() { return id; }
     public Category getCategory() { return category; }
@@ -37,6 +74,8 @@ public abstract class Item {
     public LocalDate getFoundDate() { return foundDate; }
     public Building getBuilding() { return building; }
     public int getFloor() { return floor; }
+    public String getTitle() { return title; }
+    public String getPublicDetail() { return publicDetail; }
+    public String getSecret() { return secret; }
     public ItemStatus getStatus() { return status; }
 }
-
