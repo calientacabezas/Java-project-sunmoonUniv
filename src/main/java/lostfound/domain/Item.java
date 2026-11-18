@@ -39,3 +39,4 @@ public abstract class Item {
     public int getFloor() { return floor; }
     public ItemStatus getStatus() { return status; }
 }
+

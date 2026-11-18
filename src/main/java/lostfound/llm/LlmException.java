@@ -7,3 +7,4 @@ public class LlmException extends LostFoundException {
     public LlmException(String message) { super(message); }
     public LlmException(String message, Throwable cause) { super(message, cause); }
 }
+

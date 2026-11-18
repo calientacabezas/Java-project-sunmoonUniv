@@ -10,3 +10,4 @@ public interface ItemRepository {
     List<Item> findAll();
     Optional<Item> findById(String id);
 }
+

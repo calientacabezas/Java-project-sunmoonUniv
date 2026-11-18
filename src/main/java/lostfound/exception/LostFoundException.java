@@ -5,3 +5,4 @@ public class LostFoundException extends RuntimeException {
     public LostFoundException(String message) { super(message); }
     public LostFoundException(String message, Throwable cause) { super(message, cause); }
 }
+
