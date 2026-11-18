@@ -24,3 +24,4 @@ public enum ItemColor {
     public String label() { return label; }
     public ColorGroup group() { return group; }
 }
+

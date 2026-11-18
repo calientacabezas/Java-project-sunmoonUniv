@@ -11,6 +11,7 @@ public enum Building {
     MAIN_HALL("본관"),
     UNKNOWN("모름");
 
+	
     private final String label;
     Building(String label) { this.label = label; }
     public String label() { return label; }
