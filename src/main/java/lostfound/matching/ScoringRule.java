@@ -6,3 +6,4 @@ import lostfound.domain.Item;
 public interface ScoringRule {
     ScoreDetail evaluate(Item item, SearchQuery query);
 }
+

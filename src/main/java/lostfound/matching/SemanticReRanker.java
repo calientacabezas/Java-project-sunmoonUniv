@@ -6,3 +6,4 @@ import java.util.List;
 public interface SemanticReRanker {
     List<MatchResult> rerank(String maskedRawInput, List<MatchResult> topK);
 }
+
