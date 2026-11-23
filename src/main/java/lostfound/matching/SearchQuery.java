@@ -9,3 +9,4 @@ import java.time.LocalDate;
 public record SearchQuery(Category category, ItemColor color, LocalDate lostDate,
                           Building building, Integer floor, String detailText,
                           String rawText) {}
+

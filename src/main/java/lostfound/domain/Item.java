@@ -46,14 +46,28 @@ public abstract class Item {
     /** 하위 클래스 고유 속성 요약 문자열 (UI 표시용). */
     public abstract String specificSummary();
 
+    /** 검색어 키워드와 물품 세부 속성 간 양방향 부분 일치 점수 계산 (0~10). */
     protected int keywordMatchScore(SearchQuery query, String... candidates) {
         if (query == null || query.detailText() == null || query.detailText().isBlank()) {
             return 0;
         }
-        String q = query.detailText().toLowerCase();
+        String q = query.detailText().trim().toLowerCase();
+        String[] tokens = q.split("[\\s,/·()]+");
         int hits = 0;
+
         for (String c : candidates) {
-            if (c != null && !c.isBlank() && q.contains(c.trim().toLowerCase())) {
+            if (c == null || c.isBlank()) continue;
+            String cLower = c.trim().toLowerCase();
+            boolean matched = q.contains(cLower);
+            if (!matched) {
+                for (String token : tokens) {
+                    if (token.length() >= 2 && cLower.contains(token)) {
+                        matched = true;
+                        break;
+                    }
+                }
+            }
+            if (matched) {
                 hits++;
             }
         }
@@ -64,8 +78,25 @@ public abstract class Item {
         this.status = status;
     }
 
+    public void markChecking() {
+        this.status = ItemStatus.CHECKING;
+    }
+
     public void markReturned() {
         this.status = ItemStatus.RETURNED;
+    }
+
+    public void markExpired() {
+        this.status = ItemStatus.EXPIRED;
+    }
+
+    public void markDisposed() {
+        this.status = ItemStatus.DISPOSED;
+    }
+
+    /** 검색 매칭 대상 여부 (보관 중·확인 중 상태만 검색에 노출). */
+    public boolean isMatchable() {
+        return status == ItemStatus.STORED || status == ItemStatus.CHECKING;
     }
 
     public String getId() { return id; }

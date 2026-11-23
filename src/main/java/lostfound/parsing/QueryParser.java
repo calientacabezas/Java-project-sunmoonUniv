@@ -10,3 +10,4 @@ import lostfound.matching.SearchQuery;
 public interface QueryParser {
     SearchQuery parse(String rawInput);
 }
+

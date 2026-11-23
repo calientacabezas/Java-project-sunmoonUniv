@@ -9,11 +9,13 @@ import lostfound.domain.ItemColor;
 import lostfound.llm.LlmClient;
 import lostfound.llm.LlmException;
 import lostfound.matching.SearchQuery;
+import lostfound.privacy.PiiMasker;
 
 import java.time.LocalDate;
 
 /**
- * 마스킹된 자연어 문장을 LLM으로 분석해 표준 SearchQuery로 추출 및 검증하는 파서.
+ * 자연어 문장을 PiiMasker로 마스킹한 뒤 LLM으로 분석해 표준 SearchQuery로 추출·검증하는 파서.
+ * 담당: 김동민.
  */
 public class LlmQueryParser implements QueryParser {
 
@@ -24,17 +26,18 @@ public class LlmQueryParser implements QueryParser {
     }
 
     @Override
-    public SearchQuery parse(String maskedInput) {
+    public SearchQuery parse(String rawInput) {
+        String maskedInput = PiiMasker.mask(rawInput == null ? "" : rawInput);
         LocalDate today = LocalDate.now();
         String systemPrompt = """
-                너는 대학교 교내 분실물 검색 조건 추출기다.
+                너는 선문대학교 교내 분실물 검색 조건 추출기다.
                 사용자 문장을 분석해 아래 JSON 형식으로만 응답하라. 마크다운 코드블록(```)이나 설명은 절대 붙이지 마라.
                 오늘 날짜는 %s 이다. ("어제", "그제", "오늘" 등 상대 날짜는 YYYY-MM-DD로 계산)
 
                 허용된 enum 값 목록:
                 - category: ELECTRONICS, WALLET_CARD, BAG_CLOTHING, GENERAL, UNKNOWN
                 - color: WHITE, BLACK, GRAY, SILVER, RED, PINK, ORANGE, YELLOW, BLUE, NAVY, GREEN, PURPLE, BROWN, BEIGE, UNKNOWN
-                - building: ENGINEERING, LIBRARY, STUDENT_HALL, MAIN_HALL, UNKNOWN
+                - building: ENGINEERING(공학관), LIBRARY(도서관), STUDENT_HALL(학생회관), MAIN_HALL(본관), HUMANITIES(인문관), NATURAL_SCIENCE(자연관), WONHWA(원화관), SPORTS_SCIENCE(스포츠과학관), GYMNASIUM(체육관), INDUSTRY_ACADEMY(산학협력관), ORANGE_CAFETERIA(오렌지식당), DORMITORY(기숙사), HEALTH_MEDICAL(보건의료관/평생교육원), UNKNOWN
                 - floor: 정수 (지하1층은 -1, 층수 언급이 없으면 null)
                 - lostDate: "YYYY-MM-DD" 또는 언급 없으면 null
                 - detailText: 물품의 브랜드, 모델명, 특징 키워드 요약 문자열
@@ -44,10 +47,10 @@ public class LlmQueryParser implements QueryParser {
                 """.formatted(today, today);
 
         String rawResponse = llmClient.complete(systemPrompt, maskedInput);
-        return parseAndValidateJson(rawResponse, maskedInput);
+        return parseAndValidateJson(rawResponse, maskedInput, today);
     }
 
-    private SearchQuery parseAndValidateJson(String rawResponse, String maskedInput) {
+    private SearchQuery parseAndValidateJson(String rawResponse, String maskedInput, LocalDate today) {
         try {
             String cleaned = rawResponse.trim();
             if (cleaned.startsWith("```")) {
@@ -60,7 +63,7 @@ public class LlmQueryParser implements QueryParser {
             ItemColor color = parseEnum(obj, "color", ItemColor.class, ItemColor.UNKNOWN);
             Building building = parseEnum(obj, "building", Building.class, Building.UNKNOWN);
             Integer floor = parseFloor(obj.get("floor"));
-            LocalDate lostDate = parseDate(obj.get("lostDate"));
+            LocalDate lostDate = parseDate(obj.get("lostDate"), today);
             String detailText = getStringOrDefault(obj, "detailText", maskedInput);
 
             return new SearchQuery(category, color, lostDate, building, floor, detailText, maskedInput);
@@ -82,23 +85,28 @@ public class LlmQueryParser implements QueryParser {
     private Integer parseFloor(JsonElement el) {
         if (el == null || el.isJsonNull()) return null;
         try {
+            int f;
             if (el.getAsJsonPrimitive().isNumber()) {
-                int f = el.getAsInt();
-                return f == 0 ? null : f;
+                f = el.getAsInt();
+            } else {
+                String digits = el.getAsString().replaceAll("[^0-9-]", "");
+                if (digits.isEmpty()) return null;
+                f = Integer.parseInt(digits);
             }
-            String digits = el.getAsString().replaceAll("[^0-9-]", "");
-            return digits.isEmpty() ? null : Integer.parseInt(digits);
+            if (f == 0 || f < -2 || f > 15) return null;
+            return f;
         } catch (Exception e) {
             return null;
         }
     }
 
-    private LocalDate parseDate(JsonElement el) {
+    private LocalDate parseDate(JsonElement el, LocalDate today) {
         if (el == null || el.isJsonNull()) return null;
         try {
             String str = el.getAsString().trim();
             if (str.isEmpty() || "null".equalsIgnoreCase(str)) return null;
-            return LocalDate.parse(str);
+            LocalDate parsed = LocalDate.parse(str);
+            return parsed.isAfter(today) ? null : parsed;
         } catch (Exception e) {
             return null;
         }

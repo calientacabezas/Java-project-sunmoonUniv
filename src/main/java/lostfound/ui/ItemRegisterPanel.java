@@ -9,24 +9,31 @@ import javax.swing.border.TitledBorder;
 import java.awt.*;
 import java.time.LocalDate;
 import java.time.format.DateTimeParseException;
+import java.util.Arrays;
 
 /**
- * 1번 탭: 습득물 표준화 등록 화면 (Item 하위 클래스 4종 동적 생성).
+ * 1번 탭: 습득물 표준화 등록 화면 (Item 하위 클래스 4종 동적 생성). 담당: 김경린.
  */
 public class ItemRegisterPanel extends JPanel {
 
     private static final Category[] REGISTER_CATEGORIES = {
             Category.ELECTRONICS, Category.WALLET_CARD, Category.BAG_CLOTHING, Category.GENERAL
     };
-    private static final Integer[] FLOORS = {1, 2, 3, 4, 5, -1};
+    private static final ItemColor[] REGISTER_COLORS = Arrays.stream(ItemColor.values())
+            .filter(c -> c != ItemColor.UNKNOWN)
+            .toArray(ItemColor[]::new);
+    private static final Building[] REGISTER_BUILDINGS = Arrays.stream(Building.values())
+            .filter(b -> b != Building.UNKNOWN)
+            .toArray(Building[]::new);
+    private static final Integer[] FLOORS = {1, 2, 3, 4, 5, 6, 7, -1};
 
     private final LostFoundService service;
     private final Runnable onItemRegistered;
 
     private final JTextField titleField = new JTextField(22);
     private final JComboBox<Category> categoryBox = new JComboBox<>(REGISTER_CATEGORIES);
-    private final JComboBox<ItemColor> colorBox = new JComboBox<>(ItemColor.values());
-    private final JComboBox<Building> buildingBox = new JComboBox<>(Building.values());
+    private final JComboBox<ItemColor> colorBox = new JComboBox<>(REGISTER_COLORS);
+    private final JComboBox<Building> buildingBox = new JComboBox<>(REGISTER_BUILDINGS);
     private final JComboBox<Integer> floorBox = new JComboBox<>(FLOORS);
     private final JTextField dateField = new JTextField(LocalDate.now().toString(), 12);
     private final JTextField publicDetailField = new JTextField(28);
@@ -173,7 +180,7 @@ public class ItemRegisterPanel extends JPanel {
             foundDate = LocalDate.parse(dateField.getText().trim());
         } catch (DateTimeParseException ex) {
             JOptionPane.showMessageDialog(this,
-                    "날짜 형식을 YYYY-MM-DD (예: 2026-11-15)로 입력해 주세요.",
+                    "날짜 형식을 YYYY-MM-DD (예: 2026-11-23)로 입력해 주세요.",
                     "날짜 형식 오류", JOptionPane.ERROR_MESSAGE);
             return;
         }

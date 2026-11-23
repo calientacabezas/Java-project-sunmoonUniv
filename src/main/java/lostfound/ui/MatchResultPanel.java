@@ -14,7 +14,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
- * 3번 탭: 매칭 후보 목록, ScoreDetail 점수 근거, 비공개 특징 대조 및 관리자 회수 승인.
+ * 3번 탭: 매칭 후보 목록, ScoreDetail 점수 근거, 비공개 특징 대조 및 관리자 회수 승인. 담당: 김경린.
  */
 public class MatchResultPanel extends JPanel {
 
@@ -26,6 +26,7 @@ public class MatchResultPanel extends JPanel {
     private final JTextArea scoreDetailArea = new JTextArea(4, 40);
     private final JLabel secretInfoLabel = new JLabel("후보 물품을 선택하면 비공개 특징이 표시됩니다.");
     private final JTextField verifierNoteField = new JTextField(24);
+    private final JButton approveBtn = new JButton("관리자 회수 승인 (반환 완료)");
 
     private List<MatchResult> currentResults = new ArrayList<>();
 
@@ -36,7 +37,7 @@ public class MatchResultPanel extends JPanel {
         setLayout(new BorderLayout(10, 10));
         setBorder(new EmptyBorder(16, 20, 16, 20));
 
-        JLabel title = new JLabel("매칭 후보 목록 및 점수 근거 (반환 완료 물품 자동 제외)");
+        JLabel title = new JLabel("매칭 후보 목록 및 점수 근거 (반환 완료·만료 물품 자동 제외)");
         title.setFont(new Font("맑은 고딕", Font.BOLD, 16));
         add(title, BorderLayout.NORTH);
 
@@ -94,7 +95,6 @@ public class MatchResultPanel extends JPanel {
 
         gbc.gridx = 1; gbc.weightx = 0.8;
         JPanel actionLine = new JPanel(new FlowLayout(FlowLayout.LEFT, 8, 0));
-        JButton approveBtn = new JButton("관리자 회수 승인 (반환 완료)");
         approveBtn.setBackground(new Color(33, 115, 70));
         approveBtn.setForeground(Color.WHITE);
         approveBtn.setFocusPainted(false);
@@ -131,8 +131,10 @@ public class MatchResultPanel extends JPanel {
         }
 
         if (!results.isEmpty()) {
+            approveBtn.setEnabled(true);
             resultTable.setRowSelectionInterval(0, 0);
         } else {
+            approveBtn.setEnabled(false);
             scoreDetailArea.setText("조건에 일치하는 미반환 습득물이 없습니다.");
             secretInfoLabel.setText("-");
         }
@@ -168,6 +170,8 @@ public class MatchResultPanel extends JPanel {
         }
 
         Item selected = currentResults.get(idx).item();
+        service.markItemChecking(selected.getId());
+
         int ans = JOptionPane.showConfirmDialog(this,
                 "[" + selected.getTitle() + "] 물품을 반환 완료(RETURNED) 처리하시겠습니까?\n승인 후에는 검색 결과에서 제외됩니다.",
                 "관리자 최종 회수 승인", JOptionPane.YES_NO_OPTION);

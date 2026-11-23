@@ -25,3 +25,4 @@ public class FakeLlmClient implements LlmClient {
     @Override
     public boolean isOnline() { return false; }
 }
+

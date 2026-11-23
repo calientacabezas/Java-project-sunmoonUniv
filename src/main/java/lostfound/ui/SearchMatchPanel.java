@@ -17,7 +17,7 @@ import java.util.List;
 import java.util.function.Consumer;
 
 /**
- * 2번 탭: 자연어 입력 → 개인정보 마스킹 & 조건 추출 → 사용자 확인 → 하이브리드 매칭 실행.
+ * 2번 탭: 자연어 입력 → 개인정보 마스킹 & 조건 추출 → 사용자 확인 → 하이브리드 매칭 실행. 담당: 김경린.
  */
 public class SearchMatchPanel extends JPanel {
 
@@ -33,7 +33,7 @@ public class SearchMatchPanel extends JPanel {
     private final JComboBox<ItemColor> colorBox = new JComboBox<>(ItemColor.values());
     private final JComboBox<Building> buildingBox = new JComboBox<>(Building.values());
     private final JComboBox<Integer> floorBox = new JComboBox<>(FLOOR_OPTIONS);
-    private final JTextField dateField = new JTextField(LocalDate.now().toString(), 12);
+    private final JTextField dateField = new JTextField(12);
     private final JTextField detailField = new JTextField(22);
 
     private String lastMaskedRawText = "";
@@ -81,7 +81,7 @@ public class SearchMatchPanel extends JPanel {
 
         addPair(confirmPanel, gbc, 0, "물품 종류", categoryBox, "주요 색상", colorBox);
         addPair(confirmPanel, gbc, 1, "분실 건물", buildingBox, "분실 층수", floorBox);
-        addPair(confirmPanel, gbc, 2, "분실 날짜", dateField, "세부 특징 키워드", detailField);
+        addPair(confirmPanel, gbc, 2, "분실 날짜 (선택)", dateField, "세부 특징 키워드", detailField);
 
         // 3단계: 실행 버튼
         JPanel actionPanel = new JPanel(new FlowLayout(FlowLayout.RIGHT, 8, 0));
@@ -157,7 +157,7 @@ public class SearchMatchPanel extends JPanel {
         if (q.color() != null) colorBox.setSelectedItem(q.color());
         if (q.building() != null) buildingBox.setSelectedItem(q.building());
         floorBox.setSelectedItem(q.floor() == null ? 0 : q.floor());
-        if (q.lostDate() != null) dateField.setText(q.lostDate().toString());
+        dateField.setText(q.lostDate() != null ? q.lostDate().toString() : "");
         if (q.detailText() != null) detailField.setText(q.detailText());
     }
 
@@ -178,6 +178,10 @@ public class SearchMatchPanel extends JPanel {
         Integer selectedFloor = (Integer) floorBox.getSelectedItem();
         Integer floor = (selectedFloor == null || selectedFloor == 0) ? null : selectedFloor;
 
+        String safeRawText = lastMaskedRawText.isEmpty()
+                ? service.maskText(naturalInputArea.getText().trim())
+                : lastMaskedRawText;
+
         SearchQuery query = new SearchQuery(
                 (Category) categoryBox.getSelectedItem(),
                 (ItemColor) colorBox.getSelectedItem(),
@@ -185,7 +189,7 @@ public class SearchMatchPanel extends JPanel {
                 (Building) buildingBox.getSelectedItem(),
                 floor,
                 detailField.getText().trim(),
-                lastMaskedRawText
+                safeRawText
         );
 
         List<MatchResult> results = service.searchMatches(query);
