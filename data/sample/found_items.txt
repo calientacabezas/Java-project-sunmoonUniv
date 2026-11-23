@@ -1,4 +1,38 @@
-# version=1
-# 샘플 습득물 (작성: 강채연·권도영). 실제 개인정보 금지, 가상 값만 사용.
-# id|type|category|color|date|building|floor|place|storage|status|detail|secret
-F0001|ELECTRONICS|EARPHONE|WHITE|2026-11-05|ENGINEERING|3|강의실|학과사무실|STORED|brand=apple|keyring
+# version=2
+# 샘플 습득물 30건 (작성: 강채연, 검토: 권도영). 모두 가상의 물품이며 실제 개인정보는 없습니다.
+# 비슷한 물건(흰 이어폰 여러 개, 검정 지갑 여러 개 등)을 일부러 섞어 변별력을 확보했습니다.
+# 형식: id|type|color|foundDate|building|floor|title|attr1|attr2|publicDetail|secret
+#   ELECTRONICS  attr1=브랜드     attr2=모델명
+#   WALLET_CARD  attr1=지갑 형태  attr2=신분증 포함 여부(Y/N)
+#   BAG_CLOTHING attr1=세부 종류  attr2=브랜드·소재
+#   GENERAL      attr1=품목 구분  attr2=(비움)
+ITEM-001|ELECTRONICS|WHITE|2026-11-22|ENGINEERING|3|갤럭시 버즈2 프로|삼성|버즈2 프로|투명 하드케이스 장착, 강의실 앞 책상 위 습득|케이스 안쪽 뚜껑에 강아지 스티커
+ITEM-002|ELECTRONICS|WHITE|2026-11-21|LIBRARY|2|에어팟 프로|애플|에어팟 프로2|케이스 모서리에 긁힘 있음|케이스 뒷면에 이니셜 JH 각인
+ITEM-003|ELECTRONICS|BLACK|2026-11-20|ENGINEERING|4|소니 헤드폰|소니|WH-1000XM5|접이식 헤드폰, 회색 파우치에 들어 있음|왼쪽 귀덮개 안쪽에 노란 스티커
+ITEM-004|ELECTRONICS|SILVER|2026-11-22|LIBRARY|3|맥북 에어 노트북|애플|맥북 에어 M3|덮개에 스티커 여러 장|바탕화면이 고양이 사진
+ITEM-005|ELECTRONICS|GRAY|2026-11-19|INDUSTRY_ACADEMY|2|갤럭시탭 태블릿|삼성|갤럭시탭 S9|키보드 커버 부착|잠금화면이 바다 사진
+ITEM-006|ELECTRONICS|BLACK|2026-11-21|STUDENT_HALL|1|C타입 충전기|삼성|25W 충전기|충전기와 케이블 한 세트|케이블에 빨간 마스킹테이프
+ITEM-007|ELECTRONICS|WHITE|2026-11-23|ENGINEERING|3|에어팟 3세대|애플|에어팟 3|케이스 없이 본체만 습득|충전 케이스 바닥에 숫자 7 낙서
+ITEM-008|ELECTRONICS|PINK|2026-11-20|HUMANITIES|2|갤럭시 버즈 FE|삼성|버즈 FE|분홍 이어폰 케이스|케이스에 토끼 키링
+ITEM-009|ELECTRONICS|BLUE|2026-11-18|NATURAL_SCIENCE|1|아이폰 15 스마트폰|애플|아이폰 15|투명 케이스 장착|케이스 안에 버스 카드
+ITEM-010|ELECTRONICS|BLACK|2026-11-22|WONHWA|4|보조배터리|샤오미|10000mAh|무광 보조배터리|옆면에 스티커 떼어낸 자국
+ITEM-011|WALLET_CARD|BLACK|2026-11-22|LIBRARY|2|검정 가죽 반지갑|반지갑|Y|열람실 출입구 근처에서 습득|학생증과 체크카드 2장
+ITEM-012|WALLET_CARD|BROWN|2026-11-19|MAIN_HALL|1|갈색 장지갑|장지갑|N|지퍼형 가죽 장지갑|안쪽에 영화표 1장
+ITEM-013|WALLET_CARD|NAVY|2026-11-21|STUDENT_HALL|2|남색 카드지갑|카드지갑|Y|목걸이 줄 달린 카드지갑|학생증 1장과 교통카드
+ITEM-014|WALLET_CARD|PINK|2026-11-20|DORMITORY|1|분홍 카드케이스|카드케이스|N|투명 창이 있는 카드케이스|네잎클로버 코팅 카드
+ITEM-015|WALLET_CARD|BLACK|2026-11-23|ENGINEERING|2|검정 카드지갑|카드지갑|Y|슬림형 가죽 카드지갑|학생증 뒤에 노란 포스트잇
+ITEM-016|WALLET_CARD|BEIGE|2026-11-18|ORANGE_CAFETERIA|1|베이지 동전지갑|동전지갑|N|천 소재 동전지갑|500원 동전 여러 개
+ITEM-017|WALLET_CARD|RED|2026-11-21|HEALTH_MEDICAL|3|빨간 반지갑|반지갑|Y|에나멜 소재 반지갑|신분증과 도서관 출입증
+ITEM-018|BAG_CLOTHING|BLACK|2026-11-21|STUDENT_HALL|1|검정 백팩|백팩|나이키|앞주머니 지퍼, 휴게실 의자 옆 습득|안에 C언어 전공서적
+ITEM-019|BAG_CLOTHING|NAVY|2026-11-22|STUDENT_HALL|1|남색 후드집업|후드집업|무신사 스탠다드|휴게실 의자 위 습득|오른쪽 주머니에 검은 립밤
+ITEM-020|BAG_CLOTHING|GRAY|2026-11-20|GYMNASIUM|1|회색 맨투맨|맨투맨|면|탈의실 앞 벤치에서 습득|목 안쪽에 이름표 테이프
+ITEM-021|BAG_CLOTHING|BEIGE|2026-11-19|LIBRARY|1|베이지 에코백|에코백|캔버스|서점 로고가 있는 에코백|안에 영어 단어장
+ITEM-022|BAG_CLOTHING|BLACK|2026-11-22|SPORTS_SCIENCE|2|검정 롱패딩|롱패딩|노스페이스|모자 달린 롱패딩|주머니 안에 유선 이어폰
+ITEM-023|BAG_CLOTHING|GREEN|2026-11-18|HUMANITIES|3|초록 크로스백|크로스백|나일론|끈 길이 조절 가능|안에 립스틱과 손거울
+ITEM-024|BAG_CLOTHING|WHITE|2026-11-21|NATURAL_SCIENCE|2|흰색 실험복|실험복|면|실험실 앞 옷걸이에서 습득|가슴 주머니에 볼펜 3자루
+ITEM-025|GENERAL|SILVER|2026-11-23|WONHWA|4|스탠리 텀블러|텀블러||복도 정수기 옆 습득|바닥면에 이니셜 KKL 각인
+ITEM-026|GENERAL|GRAY|2026-11-22|MAIN_HALL|2|회색 자동 장우산|우산||손잡이 버튼식 자동우산|손잡이 아래 이름표 테이프
+ITEM-027|GENERAL|BLUE|2026-11-20|ENGINEERING|3|파란 3단 우산|우산||접이식 3단 우산|우산 끈이 매듭으로 묶여 있음
+ITEM-028|GENERAL|YELLOW|2026-11-21|LIBRARY|3|노란 필통|필통||지퍼 달린 천 필통|샤프 3자루와 지우개
+ITEM-029|GENERAL|PURPLE|2026-11-19|DORMITORY|1|보라 열쇠고리|열쇠||인형 열쇠고리에 열쇠 2개|열쇠 하나에 빨간 고무 커버
+ITEM-030|GENERAL|BLACK|2026-11-22|INDUSTRY_ACADEMY|1|자료구조 전공책|전공책||표지에 비닐 커버|첫 장에 연필로 쓴 메모

@@ -6,7 +6,9 @@ import lostfound.matching.*;
 import lostfound.parsing.QueryParser;
 import lostfound.privacy.PiiMasker;
 import lostfound.repository.ItemRepository;
+import lostfound.repository.PhotoStorage;
 
+import java.nio.file.Path;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
@@ -27,6 +29,7 @@ public class LostFoundService {
     private final SemanticReRanker semanticReRanker;
     private final List<ScoringRule> scoringRules;
     private final AtomicInteger idSequence = new AtomicInteger(100);
+    private final PhotoStorage photoStorage = new PhotoStorage();
     private boolean forceOfflineOverride = false;
 
     public LostFoundService(ItemRepository repository, LlmClient llmClient) {
@@ -140,6 +143,17 @@ public class LostFoundService {
         repository.save(item);
     }
 
+    /**
+     * 1-1. 사진과 함께 습득물 등록. 사진은 먼저 검사·복사하고, 실패하면 등록하지 않는다 (예외 메시지를 화면에 표시).
+     * photoSource가 null이면 사진 없이 등록한다.
+     */
+    public void registerItem(Item item, Path photoSource) {
+        if (photoSource != null) {
+            item.setPhotoPath(photoStorage.store(item.getId(), photoSource));
+        }
+        repository.save(item);
+    }
+
     /** 2. 개인정보 마스킹 후 자연어 → SearchQuery 변환 (온라인 시 LLM API 호출, 장애 시 규칙 파서 자동 폴백) */
     public ParseOutcome parseNaturalQuery(String rawInput) {
         String masked = maskText(rawInput);
@@ -179,8 +193,23 @@ public class LostFoundService {
             candidates.add(new MatchResult(item, ruleScore, 0, ruleScore, details, reason));
         }
 
-        candidates.sort((a, b) -> Integer.compare(b.finalScore(), a.finalScore()));
-        return new ArrayList<>(candidates.subList(0, Math.min(10, candidates.size())));
+        candidates.sort(MatchResult.RANKING);
+        return new ArrayList<>(candidates.subList(0, Math.min(TOP_K, candidates.size())));
+    }
+
+    /** 의미 재평가에 보낼 규칙 점수 상위 후보 수. */
+    public static final int TOP_K = 10;
+
+    /** 전체 미반환 목록 (조건 없이 보관 중·확인 중 물품 전체, 최근 습득일 순). LLM을 호출하지 않는다. */
+    public List<MatchResult> listAllMatchable() {
+        List<MatchResult> all = new ArrayList<>();
+        for (Item item : repository.findAll()) {
+            if (item.isMatchable()) {
+                all.add(new MatchResult(item, 0, 0, 0, List.of(), "전체 목록 (검색 조건 없음)"));
+            }
+        }
+        all.sort(MatchResult.RANKING);
+        return all;
     }
 
     /** 3-B. 하이브리드 매칭 (규칙 5개 점수 상위 10개 추출 후 온라인 시 SemanticReRanker 재정렬). */
@@ -199,6 +228,16 @@ public class LostFoundService {
         repository.findById(itemId).ifPresent(item -> {
             item.markChecking();
             repository.save(item);
+        });
+    }
+
+    /** 4-1. 소유자 확인 실패·취소 시 다시 보관 중으로 되돌림 (확인 중 상태로 남지 않도록). */
+    public void cancelChecking(String itemId) {
+        repository.findById(itemId).ifPresent(item -> {
+            if (item.getStatus() == ItemStatus.CHECKING) {
+                item.setStatus(ItemStatus.STORED);
+                repository.save(item);
+            }
         });
     }
 

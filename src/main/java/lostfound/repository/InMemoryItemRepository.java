@@ -12,8 +12,16 @@ import java.util.Optional;
 public class InMemoryItemRepository implements ItemRepository {
     private final Map<String, Item> storage = new LinkedHashMap<>();
 
+    /** 기본 시연용 샘플 4건을 넣어 만든다. */
     public InMemoryItemRepository() {
         seedSampleItems();
+    }
+
+    /** 주어진 물품만으로 만든다 (샘플 파일 로드·정확도 실험·테스트용). 담당: 강채연. */
+    public InMemoryItemRepository(List<? extends Item> items) {
+        for (Item item : items) {
+            save(item);
+        }
     }
 
     private void seedSampleItems() {
