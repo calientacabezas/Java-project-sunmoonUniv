@@ -11,7 +11,7 @@ import java.io.File;
 import java.util.HashMap;
 import java.util.Map;
 
-/** 사진 축소본 만들기와 사진이 없을 때의 대체 그림. 담당: 강채연. */
+/** 사진 축소본 만들기와 사진이 없을 때의 대체 그림. */
 final class Images {
     private Images() {}
 

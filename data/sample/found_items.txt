@@ -1,5 +1,5 @@
 # version=2
-# 샘플 습득물 30건 (작성: 강채연, 검토: 권도영). 모두 가상의 물품이며 실제 개인정보는 없습니다.
+# 샘플 습득물 30건. 모두 가상의 물품이며 실제 개인정보는 없습니다.
 # 비슷한 물건(흰 이어폰 여러 개, 검정 지갑 여러 개 등)을 일부러 섞어 변별력을 확보했습니다.
 # 형식: id|type|color|foundDate|building|floor|title|attr1|attr2|publicDetail|secret
 #   ELECTRONICS  attr1=브랜드     attr2=모델명

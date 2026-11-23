@@ -1,4 +1,4 @@
-# 정확도 비교 실험 케이스 30건 (작성: 강채연, 검토: 권도영)
+# 정확도 비교 실험 케이스 30건
 # 형식: id|type|query|answerItemId  (answerItemId는 data/sample/found_items.txt의 ID)
 # type: NORMAL(표준 표현) / SYNONYM(동의어·유사 색상·건물 약칭) / TYPO(오타) / FOREIGN(외국어)
 # 비율: NORMAL 10 / SYNONYM 10 / TYPO 5 / FOREIGN 5

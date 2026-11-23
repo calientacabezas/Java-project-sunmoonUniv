@@ -9,7 +9,7 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 /**
- * 정확도 실험의 "규칙만" 기준선 파서. 담당: 강채연.
+ * 정확도 실험의 "규칙만" 기준선 파서.
  *
  * <p>enum에 정의된 <b>표준 이름</b>(Category·ItemColor·Building의 label)만 인식한다.
  * "공대", "하얀", "버즈", 영어 표현 같은 동의어·외국어는 일부러 인식하지 않는다.

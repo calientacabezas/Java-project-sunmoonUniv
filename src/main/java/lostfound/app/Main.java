@@ -18,7 +18,7 @@ import javax.swing.SwingUtilities;
 import java.util.List;
 
 /**
- * 프로그램 시작점: 객체를 조립하고 메인 창을 띄운다. 담당: 김경린(화면), 강채연(조립·데이터).
+ * 프로그램 시작점: 객체를 조립하고 메인 창을 띄운다.
  * 샘플 파일(data/sample/found_items.txt)이 있으면 그 30건을, 없으면 기본 샘플 4건을 쓴다.
  */
 public class Main {

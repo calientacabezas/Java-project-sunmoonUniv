@@ -10,7 +10,6 @@ import java.awt.*;
 
 /**
  * 메인 프레임: 상단 헤더(서비스 이름·온라인/오프라인 상태)와 3개 핵심 화면 탭.
- * 담당: 김경린, 디자인 개편: 강채연.
  */
 public class MainFrame extends JFrame {
 

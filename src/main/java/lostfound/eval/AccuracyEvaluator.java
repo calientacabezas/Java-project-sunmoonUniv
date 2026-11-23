@@ -29,7 +29,6 @@ import java.util.Map;
  * </ul>
  * 두 방식은 같은 습득물(data/sample)과 같은 검색어(data/eval)를 쓴다.
  * 하이브리드에서 LLM이 실패하면 기준선 파서로 대체되므로, 실패가 많으면 두 결과가 같아진다.
- * 담당: 강채연(코드), 권도영(평가 데이터·실행 기록).
  */
 public class AccuracyEvaluator {
     static final Path CASES = Path.of("data", "eval", "eval_cases.txt");

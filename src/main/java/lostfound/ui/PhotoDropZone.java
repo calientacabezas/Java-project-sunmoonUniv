@@ -15,7 +15,7 @@ import java.nio.file.Path;
 import java.util.List;
 
 /**
- * 사진 첨부 영역: 클릭해서 파일을 고르거나, 탐색기에서 사진을 끌어다 놓으면 미리보기를 보여 준다. 담당: 강채연.
+ * 사진 첨부 영역: 클릭해서 파일을 고르거나, 탐색기에서 사진을 끌어다 놓으면 미리보기를 보여 준다.
  * 휴대폰으로 찍은 사진을 PC로 옮긴 뒤 등록하는 흐름을 가정한다.
  */
 class PhotoDropZone extends JPanel {

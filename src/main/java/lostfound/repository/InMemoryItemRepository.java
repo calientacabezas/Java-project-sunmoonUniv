@@ -8,7 +8,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 
-/** 메모리 저장소 구현체 (담당: 김경린, 화면·테스트용). */
+/** 메모리 저장소 구현체 (화면·테스트·실험용). 프로그램을 끄면 내용이 사라진다. */
 public class InMemoryItemRepository implements ItemRepository {
     private final Map<String, Item> storage = new LinkedHashMap<>();
 
@@ -17,7 +17,7 @@ public class InMemoryItemRepository implements ItemRepository {
         seedSampleItems();
     }
 
-    /** 주어진 물품만으로 만든다 (샘플 파일 로드·정확도 실험·테스트용). 담당: 강채연. */
+    /** 주어진 물품만으로 만든다 (샘플 파일 로드·정확도 실험·테스트용). */
     public InMemoryItemRepository(List<? extends Item> items) {
         for (Item item : items) {
             save(item);

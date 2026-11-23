@@ -17,7 +17,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
- * data/sample/found_items.txt 를 읽어 Item 객체 목록으로 만든다. 담당: 강채연.
+ * data/sample/found_items.txt 를 읽어 Item 객체 목록으로 만든다.
  *
  * <pre>
  * 형식: id|type|color|foundDate|building|floor|title|attr1|attr2|publicDetail|secret[|photo]

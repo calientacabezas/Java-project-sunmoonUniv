@@ -16,8 +16,8 @@ import java.util.List;
 import java.util.function.Consumer;
 
 /**
- * 2번 탭: 자연어 입력 → 개인정보 마스킹 & 조건 추출 → 사용자 확인 → 하이브리드 매칭 실행. 담당: 김경린.
- * 카드형 화면·예시 문장·비동기 처리 추가 (강채연).
+ * 2번 탭: 자연어 입력 → 개인정보 마스킹 & 조건 추출 → 사용자 확인 → 하이브리드 매칭 실행.
+ * LLM 호출은 SwingWorker로 화면 스레드 밖에서 실행한다.
  */
 public class SearchMatchPanel extends JPanel {
 

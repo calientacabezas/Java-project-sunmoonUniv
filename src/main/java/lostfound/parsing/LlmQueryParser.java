@@ -15,7 +15,6 @@ import java.time.LocalDate;
 
 /**
  * 자연어 문장을 PiiMasker로 마스킹한 뒤 LLM으로 분석해 표준 SearchQuery로 추출·검증하는 파서.
- * 담당: 김동민.
  */
 public class LlmQueryParser implements QueryParser {
 

@@ -12,7 +12,7 @@ import java.util.Locale;
 import java.util.Set;
 
 /**
- * 습득물 사진을 data/photos/ 아래에 "물품ID.확장자"로 복사해 보관한다. 담당: 강채연.
+ * 습득물 사진을 data/photos/ 아래에 "물품ID.확장자"로 복사해 보관한다.
  * 원본 파일은 건드리지 않는다. data/ 폴더는 .gitignore 대상이라 사진은 저장소에 올라가지 않는다.
  */
 public class PhotoStorage {

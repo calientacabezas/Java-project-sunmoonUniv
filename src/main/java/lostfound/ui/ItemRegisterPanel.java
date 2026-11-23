@@ -12,8 +12,7 @@ import java.time.format.DateTimeParseException;
 import java.util.Arrays;
 
 /**
- * 1번 탭: 습득물 표준화 등록 화면 (Item 하위 클래스 4종 동적 생성). 담당: 김경린.
- * 사진 첨부와 카드형 화면 구성 추가 (강채연).
+ * 1번 탭: 습득물 등록 화면. 종류에 따라 Item 하위 클래스 4종 중 하나를 만들고, 사진을 첨부할 수 있다.
  */
 public class ItemRegisterPanel extends JPanel {
 
