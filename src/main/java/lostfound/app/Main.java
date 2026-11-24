@@ -1,32 +1,30 @@
 package lostfound.app;
 
-import lostfound.domain.Item;
 import lostfound.llm.LlmClient;
 import lostfound.llm.LlmClientFactory;
 import lostfound.matching.LlmSemanticReRanker;
 import lostfound.matching.SemanticReRanker;
 import lostfound.parsing.LlmQueryParser;
 import lostfound.parsing.QueryParser;
-import lostfound.repository.InMemoryItemRepository;
 import lostfound.repository.ItemRepository;
-import lostfound.repository.SampleDataLoader;
+import lostfound.repository.RepositoryFactory;
 import lostfound.service.LostFoundService;
 import lostfound.ui.MainFrame;
 import lostfound.ui.Theme;
 
 import javax.swing.SwingUtilities;
-import java.util.List;
 
 /**
  * 프로그램 시작점: 객체를 조립하고 메인 창을 띄운다.
- * 샘플 파일(data/sample/found_items.txt)이 있으면 그 30건을, 없으면 기본 샘플 4건을 쓴다.
+ * 저장소는 MySQL(환경변수 LF_DB_URL 설정 시)을 쓰고, 연결할 수 없으면 텍스트 파일(data/items.txt)로 저장한다.
+ * 처음 실행이라 데이터가 없으면 샘플 30건(data/sample/found_items.txt)으로 채운다.
  */
 public class Main {
     public static void main(String[] args) {
         LlmClient llm = LlmClientFactory.create();
         QueryParser llmParser = new LlmQueryParser(llm);
         SemanticReRanker reRanker = new LlmSemanticReRanker(llm);
-        ItemRepository repository = createRepository();
+        ItemRepository repository = RepositoryFactory.create();   // MySQL → 실패 시 텍스트 파일
 
         LostFoundService service = new LostFoundService(repository, llm, llmParser, reRanker);
 
@@ -37,13 +35,4 @@ public class Main {
         });
     }
 
-    static ItemRepository createRepository() {
-        List<Item> items = SampleDataLoader.loadOrEmpty(SampleDataLoader.DEFAULT_PATH);
-        if (items.isEmpty()) {
-            System.err.println("[샘플] 기본 샘플 4건으로 실행합니다.");
-            return new InMemoryItemRepository();
-        }
-        System.err.println("[샘플] 습득물 " + items.size() + "건을 불러왔습니다.");
-        return new InMemoryItemRepository(items);
-    }
 }

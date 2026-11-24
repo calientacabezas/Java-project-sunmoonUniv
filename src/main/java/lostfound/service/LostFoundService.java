@@ -126,6 +126,11 @@ public class LostFoundService {
         this.forceOfflineOverride = offline;
     }
 
+    /** 현재 저장 방식 (화면 상단 표시용). */
+    public String storageDescription() {
+        return repository.describe();
+    }
+
     public String maskText(String rawInput) {
         return PiiMasker.mask(rawInput == null ? "" : rawInput);
     }
