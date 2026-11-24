@@ -56,47 +56,55 @@ public class LostFoundService {
                 : defaultScoringRules();
     }
 
-    /** 규칙 5개(종류 40점, 색상 25점, 건물 20점, 층수 5점, 세부특징 10점) 기본 구성. */
+    /** 날짜 규칙 배점: 차이(습득일 − 분실일)별 점수. 계획서의 "날짜 오차 계산"을 구현한 부분. */
+    public static final int DATE_MAX = 15;
+
+    /**
+     * 규칙 6개 기본 구성 (합계 100점):
+     * 종류 35, 색상 20(같은 계열 10), 날짜 15(오차 허용), 건물 15(인접 8), 층수 5, 세부특징 10.
+     */
     public static List<ScoringRule> defaultScoringRules() {
         return List.of(
-                // 1) 종류 규칙 (40점)
+                // 1) 종류 규칙 (35점)
                 (item, query) -> {
                     if (query.category() == null || query.category() == Category.UNKNOWN) {
-                        return new ScoreDetail("종류", 0, 40, false, "종류 미지정(분모 제외)");
+                        return new ScoreDetail("종류", 0, 35, false, "종류 미지정(분모 제외)");
                     }
                     if (item.getCategory() == query.category()) {
-                        return new ScoreDetail("종류", 40, 40, true, "종류 일치(" + item.getCategory().label() + ") +40");
+                        return new ScoreDetail("종류", 35, 35, true, "종류 일치(" + item.getCategory().label() + ") +35");
                     }
-                    return new ScoreDetail("종류", 0, 40, true, "종류 불일치 +0");
+                    return new ScoreDetail("종류", 0, 35, true, "종류 불일치 +0");
                 },
-                // 2) 색상 규칙 (완전 일치 25점, 같은 계열 10점)
+                // 2) 색상 규칙 (완전 일치 20점, 같은 계열 10점)
                 (item, query) -> {
                     if (query.color() == null || query.color() == ItemColor.UNKNOWN) {
-                        return new ScoreDetail("색상", 0, 25, false, "색상 미지정(분모 제외)");
+                        return new ScoreDetail("색상", 0, 20, false, "색상 미지정(분모 제외)");
                     }
                     if (item.getColor() == query.color()) {
-                        return new ScoreDetail("색상", 25, 25, true, "색상 완전 일치(" + item.getColor().label() + ") +25");
+                        return new ScoreDetail("색상", 20, 20, true, "색상 완전 일치(" + item.getColor().label() + ") +20");
                     }
                     if (item.getColor().group() != ColorGroup.NONE
                             && item.getColor().group() == query.color().group()) {
-                        return new ScoreDetail("색상", 10, 25, true, "같은 계열 색상(" + item.getColor().label() + ") +10");
+                        return new ScoreDetail("색상", 10, 20, true, "같은 계열 색상(" + item.getColor().label() + ") +10");
                     }
-                    return new ScoreDetail("색상", 0, 25, true, "색상 불일치 +0");
+                    return new ScoreDetail("색상", 0, 20, true, "색상 불일치 +0");
                 },
-                // 3) 건물 규칙 (동일 건물 20점, 인접 건물 10점)
+                // 3) 날짜 규칙 (15점, 오차 허용)
+                LostFoundService::scoreDate,
+                // 4) 건물 규칙 (동일 건물 15점, 인접 건물 8점)
                 (item, query) -> {
                     if (query.building() == null || query.building() == Building.UNKNOWN) {
-                        return new ScoreDetail("건물", 0, 20, false, "건물 미지정(분모 제외)");
+                        return new ScoreDetail("건물", 0, 15, false, "건물 미지정(분모 제외)");
                     }
                     if (item.getBuilding() == query.building()) {
-                        return new ScoreDetail("건물", 20, 20, true, "건물 일치(" + item.getBuilding().label() + ") +20");
+                        return new ScoreDetail("건물", 15, 15, true, "건물 일치(" + item.getBuilding().label() + ") +15");
                     }
                     if (item.getBuilding().isAdjacent(query.building())) {
-                        return new ScoreDetail("건물", 10, 20, true, "인접 건물(" + item.getBuilding().label() + ") +10");
+                        return new ScoreDetail("건물", 8, 15, true, "인접 건물(" + item.getBuilding().label() + ") +8");
                     }
-                    return new ScoreDetail("건물", 0, 20, true, "건물 불일치 +0");
+                    return new ScoreDetail("건물", 0, 15, true, "건물 불일치 +0");
                 },
-                // 4) 층수 규칙 (5점)
+                // 5) 층수 규칙 (5점)
                 (item, query) -> {
                     if (query.floor() == null || query.floor() == 0) {
                         return new ScoreDetail("층수", 0, 5, false, "층수 미지정(분모 제외)");
@@ -107,7 +115,7 @@ public class LostFoundService {
                     }
                     return new ScoreDetail("층수", 0, 5, true, "층수 불일치 +0");
                 },
-                // 5) 세부 특징 규칙 (Item 하위 클래스 다형성 detailScore: 0~10점)
+                // 6) 세부 특징 규칙 (Item 하위 클래스 다형성 detailScore: 0~10점)
                 (item, query) -> {
                     if (query.detailText() == null || query.detailText().isBlank()) {
                         return new ScoreDetail("세부특징", 0, 10, false, "세부설명 없음(분모 제외)");
@@ -116,6 +124,37 @@ public class LostFoundService {
                     return new ScoreDetail("세부특징", dScore, 10, true, "세부특징 일치 +" + dScore);
                 }
         );
+    }
+
+    /**
+     * 날짜 규칙. d = 습득일 − 분실일(일).
+     * <ul>
+     *   <li>d = 0~1: 15점 (잃어버린 날이나 다음 날 주움)</li>
+     *   <li>d = −1: 10점 (분실 날짜를 하루 늦게 기억한 경우를 허용)</li>
+     *   <li>d = 2~3: 10점, d = 4~7: 5점</li>
+     *   <li>d ≤ −2 (잃어버리기 전에 주움) 또는 d ≥ 8: 0점</li>
+     * </ul>
+     * 분실 날짜를 모르면 비교하지 않는다(분모 제외).
+     */
+    static ScoreDetail scoreDate(Item item, SearchQuery query) {
+        if (query.lostDate() == null || item.getFoundDate() == null) {
+            return new ScoreDetail("날짜", 0, DATE_MAX, false, "날짜 미지정(분모 제외)");
+        }
+        long d = java.time.temporal.ChronoUnit.DAYS.between(query.lostDate(), item.getFoundDate());
+        int score;
+        String reason;
+        if (d >= 0 && d <= 1) {
+            score = 15; reason = d == 0 ? "같은 날 습득 +15" : "다음 날 습득 +15";
+        } else if (d == -1) {
+            score = 10; reason = "분실일 하루 전 습득(날짜 착각 허용) +10";
+        } else if (d >= 2 && d <= 3) {
+            score = 10; reason = d + "일 뒤 습득 +10";
+        } else if (d >= 4 && d <= 7) {
+            score = 5; reason = d + "일 뒤 습득 +5";
+        } else {
+            score = 0; reason = d < 0 ? "분실일보다 " + (-d) + "일 전 습득 +0" : d + "일 뒤 습득 +0";
+        }
+        return new ScoreDetail("날짜", score, DATE_MAX, true, reason);
     }
 
     public boolean isOnlineMode() {
