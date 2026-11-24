@@ -1,6 +1,6 @@
 package lostfound.domain;
 
-/** 물품 종류. 담당: 강채연. UNKNOWN = 사용자가 "모름"을 선택 (점수 분모에서 제외). */
+/** 물품 종류. UNKNOWN = 사용자가 "모름"을 선택 (점수 분모에서 제외). */
 public enum Category {
     ELECTRONICS("전자기기"),
     WALLET_CARD("지갑·카드"),

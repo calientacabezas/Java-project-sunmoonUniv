@@ -2,7 +2,7 @@ package lostfound.eval;
 
 import java.util.List;
 
-/** 평가 지표 계산. 담당: 강채연(코드), 권도영(실행·기록). */
+/** 평가 지표 계산 (Top-K 포함률, 평균 역순위). */
 public final class Metrics {
     private Metrics() {}
 

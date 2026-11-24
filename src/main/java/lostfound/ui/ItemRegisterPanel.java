@@ -1,18 +1,18 @@
 package lostfound.ui;
 
 import lostfound.domain.*;
+import lostfound.exception.LostFoundException;
 import lostfound.service.LostFoundService;
 
 import javax.swing.*;
 import javax.swing.border.EmptyBorder;
-import javax.swing.border.TitledBorder;
 import java.awt.*;
 import java.time.LocalDate;
 import java.time.format.DateTimeParseException;
 import java.util.Arrays;
 
 /**
- * 1번 탭: 습득물 표준화 등록 화면 (Item 하위 클래스 4종 동적 생성). 담당: 김경린.
+ * 1번 탭: 습득물 등록 화면. 종류에 따라 Item 하위 클래스 4종 중 하나를 만들고, 사진을 첨부할 수 있다.
  */
 public class ItemRegisterPanel extends JPanel {
 
@@ -51,35 +51,57 @@ public class ItemRegisterPanel extends JPanel {
     private final JTextField bagBrandField = new JTextField(15);
     private final JTextField generalSubField = new JTextField(20);
 
+    private final PhotoDropZone photoZone = new PhotoDropZone();
+
     public ItemRegisterPanel(LostFoundService service, Runnable onItemRegistered) {
         this.service = service;
         this.onItemRegistered = onItemRegistered;
 
-        setLayout(new BorderLayout(12, 12));
-        setBorder(new EmptyBorder(18, 24, 18, 24));
+        setLayout(new BorderLayout(0, 16));
+        setBackground(Theme.BG);
+        setBorder(new EmptyBorder(20, 24, 20, 24));
 
-        JLabel header = new JLabel("습득물 표준화 등록 (종류별 세부 속성 자동 전환)");
-        header.setFont(new Font("맑은 고딕", Font.BOLD, 17));
-        add(header, BorderLayout.NORTH);
+        JPanel heading = new JPanel(new BorderLayout(0, 4));
+        heading.setOpaque(false);
+        JLabel title = new JLabel("습득물 등록");
+        title.setFont(Theme.HEADLINE);
+        title.setForeground(Theme.TEXT);
+        heading.add(title, BorderLayout.NORTH);
+        heading.add(Theme.muted("주운 물건의 사진과 정보를 목록에서 골라 표준화된 형태로 등록합니다. * 표시는 필수 항목입니다."),
+                BorderLayout.SOUTH);
+        add(heading, BorderLayout.NORTH);
 
         configureEnumRenderers();
         buildSubtypeCards();
 
-        JPanel formPanel = new JPanel(new GridBagLayout());
+        // 왼쪽: 사진 카드
+        JPanel photoCard = Theme.card("사진", photoZone);
+        photoCard.setPreferredSize(new Dimension(320, 0));
+
+        // 오른쪽: 정보 입력 카드
+        JPanel form = new JPanel(new GridBagLayout());
         GridBagConstraints gbc = new GridBagConstraints();
-        gbc.insets = new Insets(6, 8, 6, 8);
+        gbc.insets = new Insets(6, 4, 6, 12);
         gbc.anchor = GridBagConstraints.WEST;
         gbc.fill = GridBagConstraints.HORIZONTAL;
 
-        addRow(formPanel, gbc, 0, "물품명 *", titleField);
-        addRow(formPanel, gbc, 1, "물품 종류 *", categoryBox);
-        addRow(formPanel, gbc, 2, "종류별 세부 속성", subtypePanel);
-        addRow(formPanel, gbc, 3, "주요 색상 *", colorBox);
-        addRow(formPanel, gbc, 4, "습득 건물 *", buildingBox);
-        addRow(formPanel, gbc, 5, "습득 층수 *", floorBox);
-        addRow(formPanel, gbc, 6, "습득 날짜 (YYYY-MM-DD) *", dateField);
-        addRow(formPanel, gbc, 7, "공개 특징 (외관 설명)", publicDetailField);
-        addRow(formPanel, gbc, 8, "비공개 특징 (소유자 검증용) *", secretField);
+        addRow(form, gbc, 0, "물품명 *", titleField);
+        addRow(form, gbc, 1, "물품 종류 *", categoryBox);
+        addRow(form, gbc, 2, "세부 정보", subtypePanel);
+        addPair(form, gbc, 3, "색상 *", colorBox, "습득 날짜 *", dateField);
+        addPair(form, gbc, 4, "습득 건물 *", buildingBox, "층 *", floorBox);
+        addRow(form, gbc, 5, "공개 특징", publicDetailField);
+        addRow(form, gbc, 6, "비공개 특징 *", secretField);
+        gbc.gridx = 1; gbc.gridy = 7; gbc.gridwidth = 3;
+        form.add(Theme.muted("비공개 특징은 검색 결과에 보이지 않고, 관리자가 소유자를 확인할 때만 사용됩니다."), gbc);
+        gbc.gridwidth = 1;
+        gbc.gridx = 0; gbc.gridy = 8; gbc.weighty = 1; gbc.gridwidth = 4;
+        form.add(Box.createGlue(), gbc);   // 남는 공간을 아래로 밀어 양식을 위쪽에 붙임
+        gbc.weighty = 0; gbc.gridwidth = 1;
+
+        titleField.putClientProperty("JTextField.placeholderText", "예: 갤럭시 버즈2 프로");
+        publicDetailField.putClientProperty("JTextField.placeholderText", "예: 투명 하드케이스, 강의실 앞 책상 위");
+        secretField.putClientProperty("JTextField.placeholderText", "예: 케이스 안쪽 강아지 스티커");
 
         categoryBox.addActionListener(e -> {
             Category selected = (Category) categoryBox.getSelectedItem();
@@ -88,19 +110,20 @@ public class ItemRegisterPanel extends JPanel {
             }
         });
 
-        add(formPanel, BorderLayout.CENTER);
+        JPanel formCard = Theme.card("물품 정보", form);
 
-        JPanel bottomBar = new JPanel(new FlowLayout(FlowLayout.RIGHT, 8, 0));
-        JButton resetBtn = new JButton("입력 초기화");
-        JButton saveBtn = new JButton("습득물 등록");
-        saveBtn.setFont(new Font("맑은 고딕", Font.BOLD, 13));
-        saveBtn.setBackground(new Color(33, 115, 70));
-        saveBtn.setForeground(Color.WHITE);
-        saveBtn.setFocusPainted(false);
+        JPanel body = new JPanel(new BorderLayout(16, 0));
+        body.setOpaque(false);
+        body.add(photoCard, BorderLayout.WEST);
+        body.add(formCard, BorderLayout.CENTER);
+        add(body, BorderLayout.CENTER);
 
+        JPanel bottomBar = new JPanel(new FlowLayout(FlowLayout.RIGHT, 10, 0));
+        bottomBar.setOpaque(false);
+        Theme.RoundButton resetBtn = Theme.ghostButton("입력 초기화");
+        Theme.RoundButton saveBtn = Theme.primaryButton("습득물 등록");
         resetBtn.addActionListener(e -> resetForm());
         saveBtn.addActionListener(e -> handleSave());
-
         bottomBar.add(resetBtn);
         bottomBar.add(saveBtn);
         add(bottomBar, BorderLayout.SOUTH);
@@ -112,7 +135,7 @@ public class ItemRegisterPanel extends JPanel {
                         list, val == null ? "" : val.label(), idx, sel, focus));
         colorBox.setRenderer((list, val, idx, sel, focus) ->
                 new DefaultListCellRenderer().getListCellRendererComponent(
-                        list, val == null ? "" : val.label() + " (" + val.group().name() + ")", idx, sel, focus));
+                        list, val == null ? "" : val.label(), idx, sel, focus));
         buildingBox.setRenderer((list, val, idx, sel, focus) ->
                 new DefaultListCellRenderer().getListCellRendererComponent(
                         list, val == null ? "" : val.label(), idx, sel, focus));
@@ -122,47 +145,47 @@ public class ItemRegisterPanel extends JPanel {
     }
 
     private void buildSubtypeCards() {
-        subtypePanel.setBorder(new TitledBorder("선택된 물품 종류 전용 필드"));
-
-        // 1. 전자기기
-        JPanel elecCard = new JPanel(new FlowLayout(FlowLayout.LEFT, 8, 2));
-        elecCard.add(new JLabel("브랜드:"));
-        elecCard.add(brandField);
-        elecCard.add(new JLabel("모델명:"));
-        elecCard.add(modelField);
-
-        // 2. 지갑·카드
-        JPanel walletCard = new JPanel(new FlowLayout(FlowLayout.LEFT, 8, 2));
-        walletCard.add(new JLabel("지갑 형태:"));
-        walletCard.add(walletTypeField);
+        subtypePanel.setOpaque(false);
+        subtypePanel.add(fieldRow("브랜드", brandField, "모델명", modelField), Category.ELECTRONICS.name());
+        JPanel walletCard = fieldRow("지갑 형태", walletTypeField, null, null);
+        idCardCheck.setOpaque(false);
         walletCard.add(idCardCheck);
-
-        // 3. 가방·의류
-        JPanel bagCard = new JPanel(new FlowLayout(FlowLayout.LEFT, 8, 2));
-        bagCard.add(new JLabel("세부 종류:"));
-        bagCard.add(bagSubTypeField);
-        bagCard.add(new JLabel("브랜드·소재:"));
-        bagCard.add(bagBrandField);
-
-        // 4. 기타
-        JPanel generalCard = new JPanel(new FlowLayout(FlowLayout.LEFT, 8, 2));
-        generalCard.add(new JLabel("세부 품목명:"));
-        generalCard.add(generalSubField);
-
-        subtypePanel.add(elecCard, Category.ELECTRONICS.name());
         subtypePanel.add(walletCard, Category.WALLET_CARD.name());
-        subtypePanel.add(bagCard, Category.BAG_CLOTHING.name());
-        subtypePanel.add(generalCard, Category.GENERAL.name());
+        subtypePanel.add(fieldRow("세부 종류", bagSubTypeField, "브랜드·소재", bagBrandField), Category.BAG_CLOTHING.name());
+        subtypePanel.add(fieldRow("품목", generalSubField, null, null), Category.GENERAL.name());
+    }
+
+    private static JPanel fieldRow(String l1, JComponent c1, String l2, JComponent c2) {
+        JPanel p = new JPanel(new FlowLayout(FlowLayout.LEFT, 8, 0));
+        p.setOpaque(false);
+        p.add(Theme.muted(l1));
+        p.add(c1);
+        if (l2 != null) {
+            p.add(Theme.muted(l2));
+            p.add(c2);
+        }
+        return p;
     }
 
     private void addRow(JPanel panel, GridBagConstraints gbc, int row, String labelText, JComponent comp) {
-        gbc.gridx = 0; gbc.gridy = row; gbc.weightx = 0.25;
-        JLabel label = new JLabel(labelText);
-        label.setFont(new Font("맑은 고딕", Font.BOLD, 13));
-        panel.add(label, gbc);
-
-        gbc.gridx = 1; gbc.weightx = 0.75;
+        gbc.gridx = 0; gbc.gridy = row; gbc.weightx = 0; gbc.gridwidth = 1;
+        panel.add(Theme.label(labelText), gbc);
+        gbc.gridx = 1; gbc.weightx = 1; gbc.gridwidth = 3;
         panel.add(comp, gbc);
+        gbc.gridwidth = 1;
+    }
+
+    private void addPair(JPanel panel, GridBagConstraints gbc, int row,
+                         String l1, JComponent c1, String l2, JComponent c2) {
+        gbc.gridy = row; gbc.gridwidth = 1;
+        gbc.gridx = 0; gbc.weightx = 0;
+        panel.add(Theme.label(l1), gbc);
+        gbc.gridx = 1; gbc.weightx = 0.5;
+        panel.add(c1, gbc);
+        gbc.gridx = 2; gbc.weightx = 0;
+        panel.add(Theme.label(l2), gbc);
+        gbc.gridx = 3; gbc.weightx = 0.5;
+        panel.add(c2, gbc);
     }
 
     private void handleSave() {
@@ -207,9 +230,15 @@ public class ItemRegisterPanel extends JPanel {
                     generalSubField.getText().trim(), publicDetail, secret);
         };
 
-        service.registerItem(newItem);
+        try {
+            service.registerItem(newItem, photoZone.selectedPath());
+        } catch (LostFoundException ex) {
+            JOptionPane.showMessageDialog(this, ex.getMessage(), "등록 실패", JOptionPane.ERROR_MESSAGE);
+            return;
+        }
         JOptionPane.showMessageDialog(this,
-                "[" + id + " / " + title + "] 등록이 완료되었습니다.",
+                "[" + id + " / " + title + "] 등록이 완료되었습니다."
+                        + (newItem.getPhotoPath() != null ? "\n사진도 함께 저장되었습니다." : ""),
                 "등록 완료", JOptionPane.INFORMATION_MESSAGE);
         resetForm();
         onItemRegistered.run();
@@ -231,5 +260,6 @@ public class ItemRegisterPanel extends JPanel {
         bagSubTypeField.setText("");
         bagBrandField.setText("");
         generalSubField.setText("");
+        photoZone.clear();
     }
 }

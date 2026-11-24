@@ -1,6 +1,6 @@
 package lostfound.domain;
 
-/** 색상. 값 목록은 권도영의 색상 계열·동의어 표를 보고 강채연이 확정. */
+/** 색상과 색상 계열. 같은 계열이면 부분 점수를 받는다 (docs/DATA_TABLES.md 참고). */
 public enum ItemColor {
     WHITE("흰색", ColorGroup.ACHROMATIC),
     BLACK("검정", ColorGroup.ACHROMATIC),

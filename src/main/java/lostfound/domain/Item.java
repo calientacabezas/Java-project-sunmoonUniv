@@ -4,7 +4,7 @@ import lostfound.matching.SearchQuery;
 import java.time.LocalDate;
 
 /**
- * 습득물 추상 클래스. 담당: 김경린.
+ * 습득물 추상 클래스.
  * 하위 클래스 4개(ElectronicsItem, WalletCardItem, BagClothingItem, GeneralItem)가
  * detailScore()를 재정의해 종류별 세부 특징을 비교한다.
  * 주의: secret(비공개 특징)은 검색 결과 객체와 LLM 요청에 절대 넣지 않는다.
@@ -20,6 +20,8 @@ public abstract class Item {
     protected final String publicDetail;
     protected final String secret;
     protected ItemStatus status = ItemStatus.STORED;
+    /** 습득물 사진 파일 경로 (data/photos 아래 상대 경로). 없으면 null. */
+    protected String photoPath;
 
     protected Item(String id, Category category, ItemColor color,
                    LocalDate foundDate, Building building, int floor) {
@@ -108,5 +110,9 @@ public abstract class Item {
     public String getTitle() { return title; }
     public String getPublicDetail() { return publicDetail; }
     public String getSecret() { return secret; }
+    public String getPhotoPath() { return photoPath; }
+    public void setPhotoPath(String photoPath) {
+        this.photoPath = (photoPath == null || photoPath.isBlank()) ? null : photoPath;
+    }
     public ItemStatus getStatus() { return status; }
 }

@@ -1,9 +1,35 @@
-# 정확도 비교 실험 케이스 (작성: 권도영)
-# 형식: id|type|query|answerItemId
-# type: NORMAL(표준 표현) / SYNONYM(동의어·유사 색상) / TYPO(오타) / FOREIGN(외국어)
-# 목표 비율: NORMAL 10 / SYNONYM 10 / TYPO 5 / FOREIGN 5 = 30건
-# answerItemId는 data/sample/found_items.txt의 ID와 일치해야 함. 개인정보는 가상 값만 사용.
-E01|NORMAL|11월 5일 공학관 3층 강의실에서 흰색 무선 이어폰을 잃어버렸어요|F0001
-E02|SYNONYM|어제 공대 3층에서 버즈 케이스 하얀 거 놓고 온 것 같아요|F0001
-E03|TYPO|공학관 3층 흰샥 무선이어펀 분실|F0001
-E04|FOREIGN|I lost white wireless earbuds on the 3rd floor of the engineering building|F0001
+# 정확도 비교 실험 케이스 30건
+# 형식: id|type|query|answerItemId  (answerItemId는 data/sample/found_items.txt의 ID)
+# type: NORMAL(표준 표현) / SYNONYM(동의어·유사 색상·건물 약칭) / TYPO(오타) / FOREIGN(외국어)
+# 비율: NORMAL 10 / SYNONYM 10 / TYPO 5 / FOREIGN 5
+# 규칙: 정답은 실험 전에 확정하고, 결과를 본 뒤 케이스를 바꾸지 않는다. 개인정보는 넣지 않는다.
+E01|NORMAL|공학관 3층에서 흰색 전자기기 갤럭시 버즈를 잃어버렸어요|ITEM-001
+E02|NORMAL|도서관 3층에서 은색 노트북 맥북 에어를 두고 왔어요|ITEM-004
+E03|NORMAL|도서관 2층에서 검정 지갑을 잃어버렸어요. 학생증이 들어 있어요|ITEM-011
+E04|NORMAL|본관 1층에서 갈색 장지갑을 분실했습니다|ITEM-012
+E05|NORMAL|학생회관 1층에서 검정 가방 백팩을 잃어버렸어요|ITEM-018
+E06|NORMAL|체육관 1층에서 회색 맨투맨을 두고 왔어요|ITEM-020
+E07|NORMAL|원화관 4층에서 은색 텀블러를 잃어버렸어요|ITEM-025
+E08|NORMAL|본관 2층에서 회색 우산을 놓고 왔어요|ITEM-026
+E09|NORMAL|인문관 3층에서 초록 크로스백 가방을 잃어버렸어요|ITEM-023
+E10|NORMAL|산학협력관 2층에서 회색 전자기기 갤럭시탭을 분실했어요|ITEM-005
+E11|SYNONYM|어제 공대 3층 강의실에 하얀 버즈 케이스 놓고 온 것 같아요|ITEM-001
+E12|SYNONYM|도서관 2층에서 화이트 에어팟 프로 잃어버렸어요|ITEM-002
+E13|SYNONYM|공대 4층에서 블랙 노이즈캔슬링 헤드셋 분실했어요|ITEM-003
+E14|SYNONYM|기숙사 1층에서 연핑크 카드케이스 잃어버렸어요|ITEM-014
+E15|SYNONYM|학관 2층에서 네이비 목걸이 카드지갑 보셨나요 학생증 있어요|ITEM-013
+E16|SYNONYM|학관 1층 휴게실에 곤색 후드티 두고 왔어요|ITEM-019
+E17|SYNONYM|스과관 2층에서 까만 롱패딩 잃어버렸어요|ITEM-022
+E18|SYNONYM|오렌지식당에서 아이보리색 동전 지갑 잃어버렸어요|ITEM-016
+E19|SYNONYM|자연대 1층에서 파란 핸드폰 잃어버렸어요|ITEM-009
+E20|SYNONYM|인문대 2층에서 핑크 무선이어폰 케이스 분실|ITEM-008
+E21|TYPO|공학관 3층 흰샥 갤럭시 벗즈 분실햇어요|ITEM-001
+E22|TYPO|도서관 2층 검졍 반지깝 일어버렸어요 학생쯩 들어있음|ITEM-011
+E23|TYPO|학생회관 1층 검정 백펙 분실햇어요|ITEM-018
+E24|TYPO|원화관 4층 은샥 텀블라 잃어버림|ITEM-025
+E25|TYPO|도서괸 3층 노랑 필텅 분실|ITEM-028
+E26|FOREIGN|I lost my white Galaxy Buds on the 3rd floor of the engineering building|ITEM-001
+E27|FOREIGN|Lost a black wallet with my student ID at the library, 2nd floor|ITEM-011
+E28|FOREIGN|I left a silver MacBook on the 3rd floor of the library|ITEM-004
+E29|FOREIGN|我在学生会馆一楼丢了黑色双肩包|ITEM-018
+E30|FOREIGN|I lost a navy hoodie in the student hall lounge on the 1st floor|ITEM-019
