@@ -27,7 +27,7 @@ import java.util.Map;
  *   <li>규칙만:    KeywordQueryParser(표준 이름만) → 규칙 5개 점수 → 정렬</li>
  *   <li>하이브리드: PiiMasker → LlmQueryParser → 규칙 5개 점수 → 상위 10개 LlmSemanticReRanker</li>
  * </ul>
- * 두 방식은 같은 습득물(data/sample)과 같은 검색어(data/eval)를 쓴다.
+ * 두 방식은 같은 습득물(data/sample)과 같은 검색어(data/eval)를 쓰고, 날짜 조건은 둘 다 뺀다(재현성).
  * 하이브리드에서 LLM이 실패하면 기준선 파서로 대체되므로, 실패가 많으면 두 결과가 같아진다.
  */
 public class AccuracyEvaluator {
@@ -80,7 +80,15 @@ public class AccuracyEvaluator {
 
     public static List<String> runHybrid(LostFoundService service, String rawQuery) {
         LostFoundService.ParseOutcome outcome = service.parseNaturalQuery(rawQuery);
-        return ids(service.searchMatches(outcome.query()));
+        return ids(service.searchMatches(withoutDate(outcome.query())));
+    }
+
+    /**
+     * 실험에서는 날짜 조건을 뺀다. "어제" 같은 상대 날짜는 실험을 돌린 날에 따라 값이 달라져
+     * 같은 데이터로도 결과가 바뀌기 때문이다 (기준선 파서도 날짜를 추출하지 않음).
+     */
+    static SearchQuery withoutDate(SearchQuery q) {
+        return new SearchQuery(q.category(), q.color(), null, q.building(), q.floor(), q.detailText(), q.rawText());
     }
 
     private static List<String> ids(List<MatchResult> results) {

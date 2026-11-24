@@ -27,7 +27,7 @@ public class KeywordQueryParser implements QueryParser {
         return new SearchQuery(
                 findCategory(text),
                 findColor(text),
-                null,                 // 날짜 점수는 현재 규칙에 없음 (향후 과제)
+                null,                 // 기준선은 날짜를 추출하지 않음 (실험 재현성, AccuracyEvaluator 참고)
                 findBuilding(text),
                 findFloor(text),
                 text,                 // 세부 특징 비교에는 원문 전체를 그대로 사용
