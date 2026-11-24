@@ -78,6 +78,9 @@ public class MainFrame extends JFrame {
         });
         JPanel right = new JPanel(new FlowLayout(FlowLayout.RIGHT, 10, 8));
         right.setOpaque(false);
+        Theme.Chip storageChip = Theme.chip(service.storageDescription(), Theme.NEUTRAL_SOFT, Theme.TEXT);
+        storageChip.setToolTipText("습득물 데이터를 저장하는 곳 (MySQL에 연결할 수 없으면 자동으로 파일에 저장)");
+        right.add(storageChip);
         right.add(modeChip);
         right.add(toggleModeBtn);
         refreshModeLabel();

@@ -1,18 +1,11 @@
 package lostfound.repository;
 
-import lostfound.domain.BagClothingItem;
-import lostfound.domain.Building;
-import lostfound.domain.ElectronicsItem;
-import lostfound.domain.GeneralItem;
 import lostfound.domain.Item;
-import lostfound.domain.ItemColor;
-import lostfound.domain.WalletCardItem;
 
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
-import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -32,7 +25,6 @@ import java.util.List;
 public final class SampleDataLoader {
 
     public static final Path DEFAULT_PATH = Path.of("data", "sample", "found_items.txt");
-    private static final int FIELD_COUNT = 11;
 
     private SampleDataLoader() {}
 
@@ -66,39 +58,6 @@ public final class SampleDataLoader {
     }
 
     static Item parseLine(String line) {
-        String[] f = line.split("\\|", -1);
-        if (f.length != FIELD_COUNT && f.length != FIELD_COUNT + 1) {
-            throw new IllegalArgumentException("항목 수 " + f.length + "개 (필요: " + FIELD_COUNT + "개, 사진 포함 시 "
-                    + (FIELD_COUNT + 1) + "개)");
-        }
-        for (int i = 0; i < f.length; i++) f[i] = f[i].trim();
-
-        String id = f[0];
-        String type = f[1];
-        ItemColor color = ItemColor.valueOf(f[2]);
-        LocalDate date = LocalDate.parse(f[3]);
-        Building building = Building.valueOf(f[4]);
-        int floor = Integer.parseInt(f[5]);
-        String title = f[6];
-        String attr1 = f[7];
-        String attr2 = f[8];
-        String publicDetail = f[9];
-        String secret = f[10];
-
-        String photo = f.length > FIELD_COUNT ? f[FIELD_COUNT] : null;
-
-        Item item = switch (type) {
-            case "ELECTRONICS" -> new ElectronicsItem(id, color, date, building, floor, title,
-                    attr1, attr2, publicDetail, secret);
-            case "WALLET_CARD" -> new WalletCardItem(id, color, date, building, floor, title,
-                    attr1, "Y".equalsIgnoreCase(attr2), publicDetail, secret);
-            case "BAG_CLOTHING" -> new BagClothingItem(id, color, date, building, floor, title,
-                    attr1, attr2, publicDetail, secret);
-            case "GENERAL" -> new GeneralItem(id, color, date, building, floor, title,
-                    attr1, publicDetail, secret);
-            default -> throw new IllegalArgumentException("알 수 없는 종류: " + type);
-        };
-        item.setPhotoPath(photo);
-        return item;
+        return ItemCodec.fromLine(line);
     }
 }

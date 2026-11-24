@@ -13,6 +13,7 @@ repositories {
 dependencies {
     implementation 'com.google.code.gson:gson:2.11.0'
     implementation 'com.formdev:flatlaf:3.5.4'   // 현대적인 Swing 테마 (없어도 기본 테마로 동작)
+    runtimeOnly 'com.mysql:mysql-connector-j:8.4.0'  // MySQL JDBC 드라이버 (DB 미사용 시 파일 저장으로 자동 전환)
 
     testImplementation platform('org.junit:junit-bom:5.11.3')
     testImplementation 'org.junit.jupiter:junit-jupiter'

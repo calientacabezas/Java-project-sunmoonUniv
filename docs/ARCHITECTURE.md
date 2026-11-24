@@ -12,7 +12,7 @@ service (ItemService, MatchingService, ClaimService)
   ├─▶ matching  (ScoringRule ×5, SemanticReRanker, HybridScorer)
   ├─▶ domain    (Item 상속 구조, enum, 상태)
   │
-  ├─▶ repository (ItemRepository: InMemory / TextFile) ──▶ data/*.txt
+  ├─▶ repository (ItemRepository: MySQL / TextFile / InMemory) ──▶ MySQL 또는 data/items.txt
   └─▶ llm        (LlmClient: Fake / 실제 / Caching) ◀── privacy (PiiMasker)
 ```
 
@@ -59,7 +59,7 @@ service (ItemService, MatchingService, ClaimService)
 |---|---|---|
 | 상속·다형성 | `Item` → 하위 클래스 4개의 `detailScore()` | 종류별 세부 비교 |
 | 전략 패턴 | `ScoringRule`, `QueryParser`, `LlmClient` 구현체 | 규칙·LLM 교체 시 기존 코드 수정 없음 |
-| 저장소 패턴 | `ItemRepository` | 파일 없이 테스트, 나중에 DB 교체 가능 |
+| 저장소 패턴 | `ItemRepository` (MySQL·파일·메모리) | 저장 방식을 바꿔도 서비스·화면 코드는 그대로, DB 장애 시 파일로 자동 전환 |
 | 대체 경로 | 키 없음·장애 → Fake·선택형 폼·규칙 점수 | API 장애에도 Must 기능 동작 |
 
 ## 5. 비기능 요구사항
@@ -92,4 +92,10 @@ ITEM-001|ELECTRONICS|WHITE|2026-11-22|ENGINEERING|3|갤럭시 버즈2 프로|삼
 | GENERAL | 품목 구분 | (비움) |
 
 마지막 `photo` 열은 선택 항목(사진 파일 경로)입니다. UTF-8, 구분자 `|`. 형식이 틀린 줄은 경고만 남기고 건너뜁니다. 파일이 없으면 기본 샘플 4건으로 실행합니다.
-실행 중 등록·승인한 내용은 메모리에만 있고 종료하면 사라집니다 (파일 저장은 향후 과제).
+
+## 8. 저장소 (MySQL + 텍스트 파일)
+
+- 기본은 MySQL(JDBC). 환경변수 `LF_DB_URL`·`LF_DB_USER`·`LF_DB_PASSWORD`가 있고 연결되면 사용합니다.
+- 연결할 수 없으면 `data/items.txt` 텍스트 파일 저장소로 자동 전환합니다. 임시 파일에 쓴 뒤 바꿔치기해 저장 중 꺼져도 파일이 깨지지 않습니다.
+- 등록·확인 중·반환 처리 때마다 저장되므로 재실행해도 데이터가 유지됩니다.
+- 설치·설정 방법: [DATABASE.md](DATABASE.md), 스키마: [db/schema.sql](db/schema.sql)

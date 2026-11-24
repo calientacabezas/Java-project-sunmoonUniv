@@ -96,4 +96,21 @@ class LostFoundServiceTest {
         assertEquals(1, service.listAllMatchable().size());
         assertNull(service.listAllMatchable().get(0).item().getPhotoPath());
     }
+
+    @Test void 파일_저장소면_재시작_후에도_등록과_반환_처리가_남는다() throws Exception {
+        java.nio.file.Path file = java.nio.file.Files.createTempDirectory("svc").resolve("items.txt");
+        LostFoundService first = new LostFoundService(
+                new lostfound.repository.TextFileItemRepository(file, List.of(wallet("W-1", ItemColor.BLACK, Building.LIBRARY, 2))),
+                new FakeLlmClient(), null, new KeywordQueryParser(), null, LostFoundService.defaultScoringRules());
+        String newId = first.nextItemId();
+        first.registerItem(umbrella(newId, ItemColor.GRAY, Building.MAIN_HALL, 2), null);
+        first.approveRecovery("W-1");
+
+        LostFoundService restarted = new LostFoundService(
+                new lostfound.repository.TextFileItemRepository(file, List.of()),
+                new FakeLlmClient(), null, new KeywordQueryParser(), null, LostFoundService.defaultScoringRules());
+        assertEquals(1, restarted.listAllMatchable().size(), "반환된 지갑은 빠지고 새 우산만 남아야 함");
+        assertEquals(newId, restarted.listAllMatchable().get(0).item().getId());
+        assertNotEquals(newId, restarted.nextItemId(), "재시작 후에도 ID가 겹치면 안 됨");
+    }
 }
